@@ -4,57 +4,39 @@ import read from './reader';
 
 // ### Task 10.2 ###
 
+class GameSaving {    // шаблон объекта сохранения
+
+  constructor(obj) {  
+    
+    this.created = obj.created, 
+    this.id = obj.id, 
+    this.userInfo = obj.userInfo
+    
+  };
+
+};
+
 export class GameSavingLoader {
 
   static async load(loadFalse, parceFalse) {   // метод асинхронной загрузки данных, с последующей асинхронной их обработкой
 
     try {
+         let loadData = await read();   // загрузка данных
+         
+         if (String(loadData) !== '[object ArrayBuffer]') throw new Error('Ошибка загрузки данных!');    // если тип загруженного объекта не 'ArrayBuffer'
 
-      let loadedData = new Promise((resolve, reject) => {   // объект "обещание" для загрузки данных
-        let load_Data;  
-        if (loadFalse) {      // техническое ветвление кода, для проверки ситуации, когда файл не загружается (принудительно выставлен флаг loadFalse = true)
-          load_Data = undefined; 
-        }else 
-          load_Data = read();                 // загрузка данных
-    
-        if (load_Data === undefined) {    // если данные не загружены 
+        let parceData = await json(loadData);    // парсинг данных
         
-          reject(new Error ('Ошибка. Файл не загружен!'))
-        }
-        else resolve(load_Data);   // если данные загружены - возвращаем их
-        
-      });
+        if ((parceData.length === 0) || (parceData.length === NaN)) throw new Error('Ошибка парсинга данных!'); // если парсинг загруженного объекта не выполнен
 
-    let load_Data = await loadedData;   // выполнение "обещания" loadedData и присвоение результатов его работы(успех или ошибка) в переменную load_Data
-
-    let parcedData = new Promise ((resolve, reject) => {    // объект "обещание" для парсинга данных
-      let parce_Data;  
-        if (parceFalse) {     // техническое ветвление кода, для проверки ситуации, когда файл не распарсивается (принудительно выставлен флаг parceFalse = true)
-          parce_Data = undefined; 
-        }else 
-          parce_Data = json(load_Data);    // парсинг данных
-
-      if (parce_Data === undefined) {
-      
-        reject(new Error ('Ошибка. Файл не обработан!'))
-      }
-      else resolve(parce_Data);  // если данные распарсились - возвращаем их
-
-      console.log('асинхронный метод выполнен');  // КОНТРОЛЬНАЯ ТОЧКА
-      return parce_Data;
-  
-    });
+        return new GameSaving(JSON.parse(parceData));   // возврат готового "распарсеного" результата в формате  GameSaving-объект
     
-    let result = await parcedData;    // выполнение "обещания" parcedData и присвоение результатов его работы(успех или ошибка) в переменную result
-
-    return result;
-  
-  }
-  catch(err) {
+    }
+      catch(err) {
     
-    return err;   // возврат ошибки (любого из выполняемых "обещаний") 
+        return alert(err.message);   // возврат ошибки (любого из выполняемых "обещаний") 
+      };
+
   };
-
-};
 
 };

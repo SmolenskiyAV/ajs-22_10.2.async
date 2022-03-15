@@ -8,29 +8,15 @@ test('shoud check class GameSavingLoader.load()', async () => {
     return saving;
   });
 
-  expect(result).toBe('{"id":9,"created":1546300800,"userInfo":{"id":1,name":"Hitman","level":10,"points":2000}}')
-});
-
-
-// проверка работы метода GameSavingLoader.load() когда файл не загружается
-test('shoud check class GameSavingLoader.load() then file loading error', async () => {
-  const result = await GameSavingLoader.load(true, false)
-  .then((saving) => {
-    return saving;
-  })
-  .catch((error) => {return error});
-
-  expect(String(result)).toBe('Error: Ошибка. Файл не загружен!')
-});
-
-
-// проверка работы метода GameSavingLoader.load() когда файл не парсится
-test('shoud check class GameSavingLoader.load() then file parcing error', async () => {
-  const result = await GameSavingLoader.load(false, true)
-  .then((saving) => {
-    return saving;
-  })
-  .catch((error) => {return error});
-
-  expect(String(result)).toBe('Error: Ошибка. Файл не обработан!')
+  expect(result).toEqual(
+    {"created": 1546300800, 
+    "id": 9, 
+    "userInfo": {
+                  "id": 1, 
+                  "level": 10, 
+                  "name": "Hitman", 
+                  "points": 2000
+                }
+    }
+  )
 });
